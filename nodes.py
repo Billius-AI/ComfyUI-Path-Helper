@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import folder_paths
 
 
 class AnyType(str):
@@ -28,11 +29,15 @@ def format_variables(string, input_variables):
 
 #
 class CreateProjectRoot:
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "project_root_name": ("STRING", {"multiline": False, "default": ""}),
+                "output_path_generation": (["relative", "absolute"],)
             }
         }
 
@@ -40,8 +45,11 @@ class CreateProjectRoot:
     FUNCTION = "create_project_root"
     CATEGORY = "path_helper"
 
-    def create_project_root(self, project_root_name):
-        return ("./" + project_root_name,)
+    def create_project_root(self, project_root_name, output_path_generation):
+        if output_path_generation == "relative":
+            return ("./" + project_root_name,)
+        elif output_path_generation == "absolute":
+            return (os.path.join(self.output_dir, project_root_name),)
 
 
 class AddFolder:
